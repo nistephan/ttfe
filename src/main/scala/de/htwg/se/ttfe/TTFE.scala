@@ -8,7 +8,7 @@ import de.htwg.se.ttfe.model.Field
 
 object Main {
   def main(args: Array[String]): Unit = {
-    val student = Player("bla")
+    val student = Player("bla1")
     println("Hello, " + student.name)
 
     val field = new Field(4)
