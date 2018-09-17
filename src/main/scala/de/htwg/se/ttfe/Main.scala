@@ -1,7 +1,7 @@
 package de.htwg.se.ttfe
 
 import de.htwg.se.ttfe.model.Player
-import de.htwg.se.ttfe.model.Block
+import de.htwg.se.ttfe.model.Cell
 
 import de.htwg.se.ttfe.model.Field
 
@@ -17,11 +17,11 @@ object Main {
     while (true) {
       val input = readLine()
       input match {
-        case "w" => field.moveUp()
-        case "a" => field.moveLeft()
-        case "s" => field.moveDown()
-        case "d" => field.moveRight()
-        case "r" => field.restart() //TODO reset points
+        case "w" => field.moveDirection("U")
+        case "a" => field.moveDirection("L")
+        case "s" => field.moveDirection("D")
+        case "d" => field.moveDirection("R")
+        case "r" => field.restart()
         case "e" => {
           println("exiting")
           sys.exit

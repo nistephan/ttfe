@@ -3,15 +3,15 @@ package de.htwg.se.ttfe.model
 class Field(sizeI:Int) {
   val size:Int = sizeI
   var amountBlocks:Int = 0
-  var blocks = Array.ofDim[Block](size, size)
+  var grid = Array.ofDim[Cell](size, size)
+  for(x <- 0 to (size -1)){
+    for(y <- 0 to (size -1)){
+      grid(x)(y) = new Cell(0)
+    }
+  }
   var score:Int = 0
-
   createRandom()
 
-  def createBlock(xI:Int, yI:Int, valueI:Int): Unit ={
-    blocks(yI)(xI) = new Block(valueI)
-    amountBlocks += 1
-  }
 
   def isMovePossible(): Boolean={
     var movePossible:Boolean = false
@@ -19,10 +19,10 @@ class Field(sizeI:Int) {
     if(amountBlocks == (size * size)){
       for(i <- 0 to (size - 1)){
         for(j <- 0 to (size - 1)){
-          if(i > 0 && blocks(j)(i).value == blocks(j)(i - 1).value){
+          if(i > 0 && grid(j)(i).value == grid(j)(i - 1).value){
             movePossible = true
           }
-          if(j > 0 && blocks(j)(i).value == blocks(j - 1)(i).value){
+          if(j > 0 && grid(j)(i).value == grid(j - 1)(i).value){
             movePossible = true
           }
         }
@@ -31,210 +31,132 @@ class Field(sizeI:Int) {
       movePossible = true
     }
 
-    return movePossible
+    movePossible
   }
 
-  def moveRight(): Unit ={
-    println("Right")
-    if(isMovePossible()) {
-      var moved: Boolean = false
-      moved = moveLoopRight()
-
-      for (y <- 0 to size - 1) {
-        for (x <- (size - 2) to 0 by -1) {
-          if (blocks(y)(x) != null && blocks(y)(x + 1) != null) {
-            if (blocks(y)(x).value == blocks(y)(x + 1).value) {
-              score += blocks(y)(x + 1).double()
-              blocks(y)(x) = null
-              moved = true
-              amountBlocks -= 1
-            }
-          }
-        }
-      }
-      if (!moved) {
-        moved = moveLoopRight()
-      } else {
-        moveLoopRight()
-      }
-
-      if (moved) {
-        createRandom()
-      }
-      printField()
-    }else{
-      loose()
-    }
-  }
-
-  def moveLoopRight(): Boolean ={
+  def addCells(y:Int, x:Int, dirX:Int, dirY:Int): Boolean ={
     var moved:Boolean = false
-    for(y <- 0 to size - 1) {
-      for (i <- 0 to (size - 1)) {
-        for (x <- (size - 2) to 0 by -1) {
-          //move right
-          if (blocks(y)(x) != null && blocks(y)(x + 1) == null) {
-            blocks(y)(x + 1) = blocks(y)(x)
-            blocks(y)(x) = null
-            moved = true
-          }
-        }
+    if(grid(y)(x).value > 0) {
+      if (grid(y)(x).value == grid(y + dirY)(x + dirX).value) {
+        score += grid(y)(x).value + grid(y + dirY)(x + dirX).value
+        grid(y + dirY)(x + dirX).value_=(grid(y)(x).value + grid(y + dirY)(x + dirX).value)
+        grid(y)(x).value_=(0)
+        moved = true
       }
     }
-    return moved
+    moved
   }
 
-
-  def moveLeft(): Unit ={
-    println("Left")
-    if(isMovePossible()) {
-      var moved: Boolean = false
-      moved = moveLoopLeft()
-
-      for (y <- 0 to size - 1) {
-        for (x <- 1 to (size - 1)) {
-          if (blocks(y)(x) != null && blocks(y)(x - 1) != null) {
-            if (blocks(y)(x).value == blocks(y)(x - 1).value) {
-              score += blocks(y)(x - 1).double()
-              blocks(y)(x) = null
-              moved = true
-              amountBlocks -= 1
-            }
-          }
-        }
-      }
-
-      if (!moved) {
-        moved = moveLoopLeft()
-      } else {
-        moveLoopLeft()
-      }
-
-      if (moved) {
-        createRandom()
-      }
-      printField()
-    }else{
-      loose()
-    }
-  }
-
-  def moveLoopLeft(): Boolean ={
+  def move(y:Int, x:Int, dirX:Int, dirY:Int): Boolean ={
     var moved:Boolean = false
-    for(y <- 0 to size - 1) {
-      for (i <- 0 to (size - 1)) {
-        for (x <- 1 to (size - 1)) {
-          //move left
-          if (blocks(y)(x) != null && blocks(y)(x - 1) == null) {
-            blocks(y)(x - 1) = blocks(y)(x)
-            blocks(y)(x) = null
-            moved = true
+    if(grid(y)(x).value > 0) {
+      if (grid(y + dirY)(x + dirX).value == 0) {
+        grid(y + dirY)(x + dirX).value_=(grid(y)(x).value)
+        grid(y)(x).value_=(0)
+        moved = true
+      }
+    }
+    moved
+  }
+
+
+  def moveDirection(direction:String): Unit = {
+    //TODO switch case L,R,U,Ds
+    var moved:Boolean = false
+    direction match {
+      case "R" => moved = moveRight()
+      case "L" => moved = moveLeft()
+      case "U" => moved = moveUp()
+      case "D" => moved = moveDown()
+    }
+    if(moved){
+      createRandom()
+    }
+    printField()
+  }
+
+  def moveRight(): Boolean={
+    var moved:Boolean = false
+    var movedToCreate:Boolean = false
+    for(i <- 0 to (size - 1 + (size / 2))) {
+      for (x <- (size - 2) to 0 by -1) {
+        for (y <- 0 to (size - 1)) {
+          if(i != (size / 2)) {
+            moved = move(y, x, 1, 0)
+          }
+          if(i == (size / 2)) {
+            moved = addCells(y, x, 1, 0)
+          }
+          if (moved) {
+            movedToCreate = true
           }
         }
       }
     }
-    return moved
+    movedToCreate
   }
 
+  def moveLeft(): Boolean ={
+    var moved:Boolean = false
+    var movedToCreate:Boolean = false
+    for(i <- 0 to (size - 1 + (size / 2))) {
+      for (x <- 1 to (size - 1)) {
+        for (y <- 0 to (size - 1)) {
+          if(i != (size / 2)){
+            moved = move(y, x, -1, 0)
+          }
+          if(i == (size / 2)) {
+            moved = addCells(y, x, -1, 0)
+          }
+          if(moved){
+            movedToCreate = true
+          }
+        }
+      }
+    }
+    movedToCreate
+  }
 
-  def moveUp(): Unit ={
-    println("Up")
-    if(isMovePossible()) {
-      var moved: Boolean = false
-      moved = moveLoopUp()
-
-      for (y <- 1 to size - 1) {
+  def moveUp(): Boolean ={
+    var moved:Boolean = false
+    var movedToCreate:Boolean = false
+    for(i <- 0 to (size - 1 + (size / 2))) {
+      for (y <- 1 to (size - 1)) {
         for (x <- 0 to (size - 1)) {
-          if (blocks(y)(x) != null && blocks(y - 1)(x) != null) {
-            if (blocks(y)(x).value == blocks(y - 1)(x).value) {
-              score += blocks(y - 1)(x).double()
-              blocks(y)(x) = null
-              moved = true
-              amountBlocks -= 1
-            }
+          if(i != (size / 2)) {
+            moved = move(y, x, 0, -1)
+          }
+          if(i == (size / 2)) {
+            moved = addCells(y, x, 0, -1)
+          }
+          if(moved){
+            movedToCreate = true
           }
         }
       }
-      if (!moved) {
-        moved = moveLoopUp()
-      } else {
-        moveLoopUp()
-      }
-
-      if (moved) {
-        createRandom()
-      }
-      printField()
-    }else{
-      loose()
     }
+    movedToCreate
   }
 
-  def moveLoopUp(): Boolean ={
+  def moveDown(): Boolean ={
     var moved:Boolean = false
-    for (x <- 0 to (size - 1)) {
-      for (i <- 0 to (size - 1)) {
-        for(y <- 1 to (size - 1)) {
-          //move up
-          if (blocks(y)(x) != null && blocks(y - 1)(x) == null) {
-            blocks(y - 1)(x) = blocks(y)(x)
-            blocks(y)(x) = null
-            moved = true
-          }
-        }
-      }
-    }
-    return moved
-  }
-
-  def moveDown(): Unit ={
-    println("Down")
-    if(isMovePossible()) {
-      var moved: Boolean = false
-      moved = moveLoopDown()
-
+    var movedToCreate:Boolean = false
+    for(i <- 0 to (size - 1 + (size / 2))) {
       for (y <- (size - 2) to 0 by -1) {
         for (x <- 0 to (size - 1)) {
-          if (blocks(y)(x) != null && blocks(y + 1)(x) != null) {
-            if (blocks(y)(x).value == blocks(y + 1)(x).value) {
-              score += blocks(y + 1)(x).double()
-              blocks(y)(x) = null
-              moved = true
-              amountBlocks -= 1
-            }
+          if(i != (size / 2)) {
+            moved = move(y, x, 0, 1)
           }
-        }
-      }
-      if (!moved) {
-        moved = moveLoopDown()
-      } else {
-        moveLoopDown()
-      }
-
-      if (moved) {
-        createRandom()
-      }
-      printField()
-    }else{
-      loose()
-    }
-  }
-
-  def moveLoopDown(): Boolean ={
-    var moved:Boolean = false
-    for (x <- 0 to (size - 1)) {
-      for (i <- 0 to (size - 1)) {
-        for(y <- (size - 2) to 0 by -1) {
-          //move up
-          if (blocks(y)(x) != null && blocks(y + 1)(x) == null) {
-            blocks(y + 1)(x) = blocks(y)(x)
-            blocks(y)(x) = null
-            moved = true
+          if(i == (size / 2)) {
+            moved = addCells(y, x, 0, 1)
+          }
+          if(moved){
+            movedToCreate = true
           }
         }
       }
     }
-    return moved
+    movedToCreate
   }
 
   def printField(): Unit ={
@@ -242,10 +164,10 @@ class Field(sizeI:Int) {
     for(i <- 0 to size - 1){
       print("|")
       for(j <- 0 to size - 1){
-        if(blocks(i)(j) == null){
+        if(grid(i)(j) == null){
           print("\t|")
         }else{
-          print(blocks(i)(j) + "\t|")
+          print(grid(i)(j) + "\t|")
         }
       }
       println()
@@ -257,9 +179,9 @@ class Field(sizeI:Int) {
     var x:Int = 0
     var y:Int = 0
     do {
-      x = r.nextInt(4)
-      y = r.nextInt(4)
-    }while(blocks(y)(x) != null)
+      x = r.nextInt(size)
+      y = r.nextInt(size)
+    }while(grid(x)(y).value != 0)
 
     var value = r.nextInt(2)
     if(value == 0){
@@ -267,7 +189,7 @@ class Field(sizeI:Int) {
     }else{
       value = 4
     }
-    createBlock(x, y, value)
+    grid(x)(y).value_=(value)
   }
 
   def loose(): Unit ={
@@ -275,7 +197,13 @@ class Field(sizeI:Int) {
   }
 
   def restart(): Unit ={
-    blocks = Array.ofDim[Block](size, size)
+    score = 0
+    amountBlocks = 0
+    for(x <- 0 to (size -1)){
+      for(y <- 0 to (size -1)){
+        grid(x)(y) = new Cell(0)
+      }
+    }
     createRandom()
     println("Restarted:")
     printField()
