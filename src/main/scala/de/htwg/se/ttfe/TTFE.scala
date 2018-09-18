@@ -1,32 +1,26 @@
 package de.htwg.se.ttfe
 
-import de.htwg.se.ttfe.model.Player
-import de.htwg.se.ttfe.model.Cell
-
 import de.htwg.se.ttfe.model.Field
 
 
-object Main {
+object TTFE {
   def main(args: Array[String]): Unit = {
-    val student = Player("bla1")
-    println("Hello, " + student.name)
-
-    val field = new Field(4)
+    val fieldSize = 4
+    val field = new Field(fieldSize)
     field.printField()
 
     while (true) {
-      val input = readLine()
+      val input = scala.io.StdIn.readLine
       input match {
         case "w" => field.moveDirection("U")
         case "a" => field.moveDirection("L")
         case "s" => field.moveDirection("D")
         case "d" => field.moveDirection("R")
         case "r" => field.restart()
-        case "e" => {
-          println("exiting")
+        case "e" =>
+          print("exiting\n")
           sys.exit
-        }
-        case _ => println("False Input!!!")
+        case _ => print("False Input!\n")
       }
     }
   }

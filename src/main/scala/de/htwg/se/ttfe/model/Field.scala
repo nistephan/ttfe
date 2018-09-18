@@ -1,11 +1,10 @@
 package de.htwg.se.ttfe.model
 
-class Field(sizeI:Int) {
-  val size:Int = sizeI
-  var amountBlocks:Int = 0
-  var grid = Array.ofDim[Cell](size, size)
-  for(x <- 0 to (size -1)){
-    for(y <- 0 to (size -1)){
+class Field(size:Int) {
+  val value_four = 4
+  var grid: Array[Array[Cell]] = Array.ofDim[Cell](size, size)
+  for(x <- 0 until size){
+    for(y <- 0 until size){
       grid(x)(y) = new Cell(0)
     }
   }
@@ -13,24 +12,18 @@ class Field(sizeI:Int) {
   createRandom()
 
 
-  def isMovePossible(): Boolean={
+  def isMovePossible: Boolean={
     var movePossible:Boolean = false
-
-    if(amountBlocks == (size * size)){
-      for(i <- 0 to (size - 1)){
-        for(j <- 0 to (size - 1)){
-          if(i > 0 && grid(j)(i).value == grid(j)(i - 1).value){
-            movePossible = true
-          }
-          if(j > 0 && grid(j)(i).value == grid(j - 1)(i).value){
-            movePossible = true
-          }
+    for(x <- 0 until size){
+      for(y <- 0 until size){
+        if(x > 0 && grid(y)(x).value == grid(y)(x - 1).value){
+          movePossible = true
+        }
+        if(y > 0 && grid(y)(x).value == grid(y - 1)(x).value){
+          movePossible = true
         }
       }
-    }else{
-      movePossible = true
     }
-
     movePossible
   }
 
@@ -61,7 +54,6 @@ class Field(sizeI:Int) {
 
 
   def moveDirection(direction:String): Unit = {
-    //TODO switch case L,R,U,Ds
     var moved:Boolean = false
     direction match {
       case "R" => moved = moveRight()
@@ -71,6 +63,9 @@ class Field(sizeI:Int) {
     }
     if(moved){
       createRandom()
+      if(!isMovePossible){
+        loose()
+      }
     }
     printField()
   }
@@ -80,7 +75,7 @@ class Field(sizeI:Int) {
     var movedToCreate:Boolean = false
     for(i <- 0 to (size - 1 + (size / 2))) {
       for (x <- (size - 2) to 0 by -1) {
-        for (y <- 0 to (size - 1)) {
+        for (y <- 0 until size) {
           if(i != (size / 2)) {
             moved = move(y, x, 1, 0)
           }
@@ -100,8 +95,8 @@ class Field(sizeI:Int) {
     var moved:Boolean = false
     var movedToCreate:Boolean = false
     for(i <- 0 to (size - 1 + (size / 2))) {
-      for (x <- 1 to (size - 1)) {
-        for (y <- 0 to (size - 1)) {
+      for (x <- 1 until size) {
+        for (y <- 0 until size) {
           if(i != (size / 2)){
             moved = move(y, x, -1, 0)
           }
@@ -121,8 +116,8 @@ class Field(sizeI:Int) {
     var moved:Boolean = false
     var movedToCreate:Boolean = false
     for(i <- 0 to (size - 1 + (size / 2))) {
-      for (y <- 1 to (size - 1)) {
-        for (x <- 0 to (size - 1)) {
+      for (y <- 1 until size) {
+        for (x <- 0 until size) {
           if(i != (size / 2)) {
             moved = move(y, x, 0, -1)
           }
@@ -143,7 +138,7 @@ class Field(sizeI:Int) {
     var movedToCreate:Boolean = false
     for(i <- 0 to (size - 1 + (size / 2))) {
       for (y <- (size - 2) to 0 by -1) {
-        for (x <- 0 to (size - 1)) {
+        for (x <- 0 until size) {
           if(i != (size / 2)) {
             moved = move(y, x, 0, 1)
           }
@@ -160,17 +155,13 @@ class Field(sizeI:Int) {
   }
 
   def printField(): Unit ={
-    println("Score: " + score)
-    for(i <- 0 to size - 1){
+    print("Score: " + score + "\n")
+    for(i <- 0 until size){
       print("|")
-      for(j <- 0 to size - 1){
-        if(grid(i)(j) == null){
-          print("\t|")
-        }else{
-          print(grid(i)(j) + "\t|")
-        }
+      for(j <- 0 until size){
+        print(grid(i)(j) + "\t|")
       }
-      println()
+      print("\n")
     }
   }
 
@@ -187,25 +178,24 @@ class Field(sizeI:Int) {
     if(value == 0){
       value = 2
     }else{
-      value = 4
+      value = value_four
     }
     grid(x)(y).value_=(value)
   }
 
   def loose(): Unit ={
-    println("No more moves possible. Click R to restart.")
+    print("No more moves possible. Click R to restart.\n")
   }
 
   def restart(): Unit ={
     score = 0
-    amountBlocks = 0
-    for(x <- 0 to (size -1)){
-      for(y <- 0 to (size -1)){
+    for(x <- 0 until size){
+      for(y <- 0 until size){
         grid(x)(y) = new Cell(0)
       }
     }
     createRandom()
-    println("Restarted:")
+    print("Restarted:\n")
     printField()
   }
 }
