@@ -67,7 +67,6 @@ class Field(size:Int) {
         loose()
       }
     }
-    printField()
   }
 
   def moveRight(): Boolean={
@@ -154,15 +153,17 @@ class Field(size:Int) {
     movedToCreate
   }
 
-  def printField(): Unit ={
-    print("Score: " + score + "\n")
+  override def toString: String ={
+    var fieldString: String = "Score: " + score + "\n"
     for(i <- 0 until size){
-      print("|")
+      fieldString += "|"
       for(j <- 0 until size){
-        print(grid(i)(j) + "\t|")
+        fieldString += (grid(i)(j) + "\t|")
       }
-      print("\n")
+      fieldString += "\n"
     }
+
+    fieldString
   }
 
   def createRandom(): Unit ={
@@ -196,6 +197,5 @@ class Field(size:Int) {
     }
     createRandom()
     print("Restarted:\n")
-    printField()
   }
 }

@@ -1,27 +1,22 @@
 package de.htwg.se.ttfe
 
+import de.htwg.se.ttfe.controller.Controller
+import de.htwg.se.ttfe.aview.Tui
 import de.htwg.se.ttfe.model.Field
 
+import scala.io.StdIn.readLine
 
 object TTFE {
-  def main(args: Array[String]): Unit = {
-    val fieldSize = 4
-    val field = new Field(fieldSize)
-    field.printField()
+    val defaultFieldSize = 4
+    val controller = new Controller(new Field(defaultFieldSize))
+    val tui = new Tui(controller)
+    controller.notifyObservers
 
-    while (true) {
-      val input = scala.io.StdIn.readLine
-      input match {
-        case "w" => field.moveDirection("U")
-        case "a" => field.moveDirection("L")
-        case "s" => field.moveDirection("D")
-        case "d" => field.moveDirection("R")
-        case "r" => field.restart()
-        case "e" =>
-          print("exiting\n")
-          sys.exit
-        case _ => print("False Input!\n")
+    def main(args: Array[String]): Unit = {
+      var input: String = ""
+      while (true) {
+        input = readLine()
+        tui.processInputLine(input)
       }
     }
-  }
 }
