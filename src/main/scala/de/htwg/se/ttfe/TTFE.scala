@@ -13,10 +13,8 @@ object TTFE {
     controller.notifyObservers
 
     def main(args: Array[String]): Unit = {
-      var input: String = ""
       while (true) {
-        input = readLine()
-        tui.processInputLine(input)
+        tui.processInputLine(readLine())
       }
     }
 }
