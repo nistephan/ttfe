@@ -9,35 +9,17 @@ class Field(size:Int) {
 
 
   def isMovePossible(x: Int, y: Int): Boolean= {
-    /*var movePossible:Boolean = false
-    for(x <- 0 until size){
-      for(y <- 0 until size){
-        if(x > 0 && grid(y)(x) == grid(y)(x - 1)){
-          movePossible = true
-        }
-        if(y > 0 && grid(y)(x) == grid(y - 1)(x)){
-          movePossible = true
-        }
-      }
-    }
-    movePossible*/
-
     if(x == size){
-      println("false")
       return false
     }
-    println("X: " + x + ", Y: " + y + ", Value: " + grid(x)(y))
     if(grid(x)(y) == 0 || (x > 0 && grid(y)(x) == grid(y)(x - 1)) || (y > 0 && grid(y)(x) == grid(y - 1)(x))){
-      println("true")
       return true
     }
-
     if (y < size - 1) {
       if(isMovePossible(x, y + 1)){
         return true
       }
     }
-
     if(isMovePossible(x + 1, 0)){
       return true
     }else{
@@ -46,7 +28,6 @@ class Field(size:Int) {
   }
 
   def moveValidation(x: Int, y: Int): Boolean ={
-    println("X: " + x + ", Y: " + y + ", Value: " + grid(x)(y))
     if(grid(x)(y) == 0 || (x > 0 && grid(y)(x) == grid(y)(x - 1)) || (y > 0 && grid(y)(x) == grid(y - 1)(x))){
       true
     }else {
@@ -57,6 +38,7 @@ class Field(size:Int) {
   def addCells(y:Int, x:Int, dirX:Int, dirY:Int): Boolean ={
     if(grid(y)(x) > 0) {
       if (grid(y)(x) == grid(y + dirY)(x + dirX)) {
+        //TODO score
         score += grid(y)(x) + grid(y + dirY)(x + dirX)
         grid(y + dirY)(x + dirX) = (grid(y)(x) + grid(y + dirY)(x + dirX))
         grid(y)(x) = 0
@@ -85,103 +67,146 @@ class Field(size:Int) {
 
 
   def moveDirection(direction:String): Unit = {
-    var moved:Boolean = false
     direction match {
-      case "R" => moved = moveRight()
-      case "L" => moved = moveLeft()
-      case "U" => moved = moveUp()
-      case "D" => moved = moveDown()
+      case "R" => createRandom2(moveRight)
+      case "L" => createRandom2(moveLeft)
+      case "U" => createRandom2(moveUp)
+      case "D" => createRandom2(moveDown)
     }
+  }
+
+  //TODO change name
+  def createRandom2(moved:Boolean): Unit = {
     if(moved){
       createRandom()
-      if(!isMovePossible(0,0)){
+      if(!isMovePossible(0, 0)){
         loose()
       }
     }
   }
 
-  def moveRight(): Boolean={
-    var moved:Boolean = false
-    var movedToCreate:Boolean = false
-    for(i <- 0 to (size - 1 + (size / 2))) {
-      for (x <- (size - 2) to 0 by -1) {
-        for (y <- 0 until size) {
+  def moveRight() : Boolean = {
+    def loop(i:Int, x:Int, y:Int, moved:Boolean): Boolean={
+      if(i == (size - 1 + (size / 2))){
+        moved
+      }else{
+        if(y < size){
           if(i != (size / 2)) {
-            moved = move(y, x, 1, 0)
+              if(move(y, x, 1, 0)){
+                loop(i, x, y + 1, true)
+              }else{
+                loop(i, x, y + 1, moved)
+              }
+          }else if(i == (size / 2)) {
+            if(addCells(y, x, 1, 0)){
+              loop(i, x, y + 1, true)
+            }else{
+              loop(i, x, y + 1, moved)
+            }
+          }else{
+            loop(i, x, y + 1, moved)
           }
-          if(i == (size / 2)) {
-            moved = addCells(y, x, 1, 0)
-          }
-          if (moved) {
-            movedToCreate = true
-          }
+        }else if(x > 0){
+          loop(i, x - 1, 0, moved)
+        }else{
+          loop(i + 1, (size - 2), 0, moved)
         }
       }
     }
-    movedToCreate
+    loop(0, (size - 2), 0, false)
   }
 
-  def moveLeft(): Boolean ={
-    var moved:Boolean = false
-    var movedToCreate:Boolean = false
-    for(i <- 0 to (size - 1 + (size / 2))) {
-      for (x <- 1 until size) {
-        for (y <- 0 until size) {
-          if(i != (size / 2)){
-            moved = move(y, x, -1, 0)
+  def moveLeft() : Boolean = {
+    def loop(i:Int, x:Int, y:Int, moved:Boolean): Boolean={
+      if(i == (size - 1 + (size / 2))){
+        moved
+      }else{
+        if(y < size){
+          if(i != (size / 2)) {
+            if(move(y, x, -1, 0)){
+              loop(i, x, y + 1, true)
+            }else{
+              loop(i, x, y + 1, moved)
+            }
+          }else if(i == (size / 2)) {
+            if(addCells(y, x, -1, 0)){
+              loop(i, x, y + 1, true)
+            }else{
+              loop(i, x, y + 1, moved)
+            }
+          }else{
+            loop(i, x, y + 1, moved)
           }
-          if(i == (size / 2)) {
-            moved = addCells(y, x, -1, 0)
-          }
-          if(moved){
-            movedToCreate = true
-          }
+        }else if(x < size - 1){
+          loop(i, x + 1, 0, moved)
+        }else{
+          loop(i + 1, 1, 0, moved)
         }
       }
     }
-    movedToCreate
+    loop(0, 1, 0, false)
   }
 
-  def moveUp(): Boolean ={
-    var moved:Boolean = false
-    var movedToCreate:Boolean = false
-    for(i <- 0 to (size - 1 + (size / 2))) {
-      for (y <- 1 until size) {
-        for (x <- 0 until size) {
+  def moveUp() : Boolean = {
+    def loop(i:Int, x:Int, y:Int, moved:Boolean): Boolean={
+      if(i == (size - 1 + (size / 2))){
+        moved
+      }else{
+        if(y < size){
           if(i != (size / 2)) {
-            moved = move(y, x, 0, -1)
+            if(move(y, x, 0, -1)){
+              loop(i, x, y + 1, true)
+            }else{
+              loop(i, x, y + 1, moved)
+            }
+          }else if(i == (size / 2)) {
+            if(addCells(y, x, 0, -1)){
+              loop(i, x, y + 1, true)
+            }else{
+              loop(i, x, y + 1, moved)
+            }
+          }else{
+            loop(i, x, y + 1, moved)
           }
-          if(i == (size / 2)) {
-            moved = addCells(y, x, 0, -1)
-          }
-          if(moved){
-            movedToCreate = true
-          }
+        }else if(x < size - 1){
+          loop(i, x + 1, 1, moved)
+        }else{
+          loop(i + 1, 0, 1, moved)
         }
       }
     }
-    movedToCreate
+    loop(0, 0, 1, false)
   }
 
-  def moveDown(): Boolean ={
-    var moved:Boolean = false
-    var movedToCreate:Boolean = false
-    for(i <- 0 to (size - 1 + (size / 2))) {
-      for (y <- (size - 2) to 0 by -1) {
-        for (x <- 0 until size) {
+  def moveDown() : Boolean = {
+    def loop(i:Int, x:Int, y:Int, moved:Boolean): Boolean={
+      if(i == (size - 1 + (size / 2))){
+        moved
+      }else{
+        if(x < size){
           if(i != (size / 2)) {
-            moved = move(y, x, 0, 1)
+            if(move(y, x, 0, 1)){
+              loop(i, x + 1, y, true)
+            }else{
+              loop(i, x + 1, y, moved)
+            }
+          }else if(i == (size / 2)) {
+            if(addCells(y, x, 0, 1)){
+              loop(i, x + 1, y, true)
+            }else{
+              loop(i, x + 1, y, moved)
+            }
+          }else{
+            loop(i, x + 1, y, moved)
           }
-          if(i == (size / 2)) {
-            moved = addCells(y, x, 0, 1)
-          }
-          if(moved){
-            movedToCreate = true
-          }
+        }else if(y > 0){
+          loop(i, 0, y - 1, moved)
+        }else{
+          loop(i + 1, 0, (size - 2), moved)
         }
       }
     }
-    movedToCreate
+    loop(0, 0, (size - 2), false)
   }
 
   override def toString: String ={
@@ -193,13 +218,10 @@ class Field(size:Int) {
       }
       fieldString += "\n"
     }
-
     fieldString
   }
 
-  def getScore(scores : Array[Int]): Int ={
-    scores.sum
-  }
+
 
   def createRandom(): Unit ={
     val r = new scala.util.Random()
@@ -208,15 +230,14 @@ class Field(size:Int) {
     do {
       x = r.nextInt(size)
       y = r.nextInt(size)
-    }while(grid(x)(y) != 0)
+    }while(grid(r.nextInt(size))(r.nextInt(size)) != 0)
 
-    var value = r.nextInt(2)
+    val value = r.nextInt(2)
     if(value == 0){
-      value = 2
+      grid(x)(y) = 2
     }else{
-      value = value_four
+      grid(x)(y) = value_four
     }
-    grid(x)(y)=(value)
   }
 
   def loose(): Unit ={
