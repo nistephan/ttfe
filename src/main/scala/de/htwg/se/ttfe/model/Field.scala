@@ -246,11 +246,16 @@ class Field(size:Int) {
 
   def restart(): Unit ={
     score = 0
-    for(x <- 0 until size){
-      for(y <- 0 until size){
+    def loop(x:Int, y:Int): Unit={
+      if(x != 4){
         grid(x)(y) = 0
+        if(y < size - 1){
+          loop(x, y + 1)
+        }
+        loop(x + 1, 0)
       }
     }
+    loop(0, 0)
     createRandom()
     print("Restarted:\n")
   }
