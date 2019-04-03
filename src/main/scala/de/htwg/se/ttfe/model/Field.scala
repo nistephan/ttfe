@@ -1,37 +1,26 @@
 package de.htwg.se.ttfe.model
 
+
+//TODO case class, Vector, copy, 
 class Field(size:Int) {
   val value_four = 4
   val grid: Array[Array[Int]] = Array.ofDim[Int](size, size)
-
   var score:Int = 0
   createRandom()
 
-
-  def isMovePossible(x: Int, y: Int): Boolean= {
+  def isMovePossible(x: Int, y: Int, movePossible: Boolean): Boolean ={
     if(x == size){
-      return false
-    }
-    if(grid(x)(y) == 0 || (x > 0 && grid(y)(x) == grid(y)(x - 1)) || (y > 0 && grid(y)(x) == grid(y - 1)(x))){
-      return true
-    }
-    if (y < size - 1) {
-      if(isMovePossible(x, y + 1)){
-        return true
-      }
-    }
-    if(isMovePossible(x + 1, 0)){
-      return true
+      movePossible
     }else{
-      return false
-    }
-  }
-
-  def moveValidation(x: Int, y: Int): Boolean ={
-    if(grid(x)(y) == 0 || (x > 0 && grid(y)(x) == grid(y)(x - 1)) || (y > 0 && grid(y)(x) == grid(y - 1)(x))){
-      true
-    }else {
-      false
+      if (y < size - 1) {
+        if(grid(x)(y) == 0 || (x > 0 && grid(y)(x) == grid(y)(x - 1)) || (y > 0 && grid(y)(x) == grid(y - 1)(x))){
+          isMovePossible(x, y + 1, true)
+        }else{
+          isMovePossible(x, y + 1, movePossible)
+        }
+      }else{
+        isMovePossible(x + 1, 0, movePossible)
+      }
     }
   }
 
@@ -40,7 +29,7 @@ class Field(size:Int) {
       if (grid(y)(x) == grid(y + dirY)(x + dirX)) {
         //TODO score
         score += grid(y)(x) + grid(y + dirY)(x + dirX)
-        grid(y + dirY)(x + dirX) = (grid(y)(x) + grid(y + dirY)(x + dirX))
+        grid(y + dirY)(x + dirX) = grid(y)(x) + grid(y + dirY)(x + dirX)
         grid(y)(x) = 0
         true
       }else{
@@ -65,7 +54,6 @@ class Field(size:Int) {
     }
   }
 
-
   def moveDirection(direction:String): Unit = {
     direction match {
       case "R" => createRandom2(moveRight)
@@ -75,11 +63,10 @@ class Field(size:Int) {
     }
   }
 
-  //TODO change name
   def createRandom2(moved:Boolean): Unit = {
     if(moved){
       createRandom()
-      if(!isMovePossible(0, 0)){
+      if(!isMovePossible(0, 0, false)){
         loose()
       }
     }
@@ -209,34 +196,25 @@ class Field(size:Int) {
     loop(0, 0, (size - 2), false)
   }
 
-  override def toString: String ={
-    var fieldString: String = "Score: " + score + "\n"
-    for(i <- 0 until size){
-      fieldString += "|"
-      for(j <- 0 until size){
-        fieldString += (grid(i)(j) + "\t|")
-      }
-      fieldString += "\n"
+  def createRandom(): Unit ={
+    while(!createRandomHelper()){
     }
-    fieldString
   }
 
-
-
-  def createRandom(): Unit ={
+  def createRandomHelper(): Boolean ={
     val r = new scala.util.Random()
-    var x:Int = 0
-    var y:Int = 0
-    do {
-      x = r.nextInt(size)
-      y = r.nextInt(size)
-    }while(grid(r.nextInt(size))(r.nextInt(size)) != 0)
-
-    val value = r.nextInt(2)
-    if(value == 0){
-      grid(x)(y) = 2
+    val x: Int = r.nextInt(size)
+    val y: Int = r.nextInt(size)
+    if(grid(x)(y) != 0){
+      false
     }else{
-      grid(x)(y) = value_four
+      val value = r.nextInt(2)
+      if(value == 0){
+        grid(x)(y) = 2
+      }else{
+        grid(x)(y) = value_four
+      }
+      true
     }
   }
 
@@ -258,5 +236,25 @@ class Field(size:Int) {
     loop(0, 0)
     createRandom()
     print("Restarted:\n")
+  }
+
+  override def toString: String ={
+    toStringHelper(0, 0, "Score: " + score + "\n|")
+  }
+
+  def toStringHelper(i:Int, j: Int, fieldString: String): String={
+    if(i == size){
+      fieldString
+    }else {
+      if (j < size) {
+        toStringHelper(i, j + 1, fieldString + (grid(i)(j) + "\t|"))
+      }else{
+        if(i == (size - 1) && j == (size)){
+          toStringHelper(i + 1, 0, fieldString + "\n")
+        }else{
+          toStringHelper(i + 1, 0, fieldString + "\n" + "|" )
+        }
+      }
+    }
   }
 }
