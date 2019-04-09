@@ -13,7 +13,7 @@ class Controller(var field:Field) extends Observable{
   def fieldToString: String = field.toString
 
   def moveDirection(direction: String):Unit = {
-    field.moveDirection(direction)
+    field = field.moveDirection(direction)
     notifyObservers
   }
 
