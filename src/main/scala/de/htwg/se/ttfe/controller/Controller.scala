@@ -5,10 +5,10 @@ import de.htwg.se.ttfe.util.Observable
 
 class Controller(var field:Field) extends Observable{
 
-  def createNewField(size:Int):Unit = {
+  /*def createNewField(size:Int):Unit = {
     field = new Field(size)
     notifyObservers
-  }
+  }*/
 
   def fieldToString: String = field.toString
 
@@ -18,7 +18,7 @@ class Controller(var field:Field) extends Observable{
   }
 
   def restart(): Unit = {
-    field.restart()
+    //field.restart()
     notifyObservers
   }
 

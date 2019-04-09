@@ -1,19 +1,25 @@
 package de.htwg.se.ttfe.model
 
 
-//TODO case class, Vector, copy, 
-class Field(size:Int) {
+//TODO case class, Vector, copy,
+case class Field(cells: Matrix[Integer]) {
+  //def this(size: Int) = this(new Matrix[Integer](size, 0))
   val value_four = 4
-  val grid: Array[Array[Int]] = Array.ofDim[Int](size, size)
+  val size = cells.size
+
+  //val grid: Array[Array[Int]] = Array.ofDim[Int](size, size)
   var score:Int = 0
-  createRandom()
+  //
+  // createRandom()
+
+  //def set(row: Int, col: Int, value: Int): Grid = copy(cells.replaceCell(row, col, Cell(value)))
 
   def isMovePossible(x: Int, y: Int, movePossible: Boolean): Boolean ={
     if(x == size){
       movePossible
     }else{
       if (y < size - 1) {
-        if(grid(x)(y) == 0 || (x > 0 && grid(y)(x) == grid(y)(x - 1)) || (y > 0 && grid(y)(x) == grid(y - 1)(x))){
+        if(cells.cell(x, y) == 0 || (x > 0 && cells.cell(y, x) == cells.cell(y, x - 1)) || (y > 0 && cells.cell(y, x) == cells.cell(y - 1, x))){
           isMovePossible(x, y + 1, true)
         }else{
           isMovePossible(x, y + 1, movePossible)
@@ -24,33 +30,39 @@ class Field(size:Int) {
     }
   }
 
-  def addCells(y:Int, x:Int, dirX:Int, dirY:Int): Boolean ={
-    if(grid(y)(x) > 0) {
-      if (grid(y)(x) == grid(y + dirY)(x + dirX)) {
+  def addCells(y:Int, x:Int, dirX:Int, dirY:Int): Field ={
+    if(cells.cell(y, x) > 0) {
+      if (cells.cell(y, x) == cells.cell(y + dirY, x + dirX)) {
         //TODO score
-        score += grid(y)(x) + grid(y + dirY)(x + dirX)
-        grid(y + dirY)(x + dirX) = grid(y)(x) + grid(y + dirY)(x + dirX)
-        grid(y)(x) = 0
-        true
+        score += cells.cell(y, x) + cells.cell(y + dirY, x + dirX)
+        val newField = copy(cells.replaceCell(y + dirY, x + dirX, cells.cell(y, x) + cells.cell(y + dirY, x + dirX)).replaceCell(y, x, 0))
+       // val newField1 = copy(newField.cells.replaceCell(y, x, 0))
+        newField
+        //cells.cell(y + dirY, x + dirX) = cells.cell(y, x) + cells.cell(y + dirY, x + dirX)
+        //cells.cell(y, x) = 0
+        //true
       }else{
-        false
+        this
       }
     } else{
-      false
+      this
     }
   }
 
-  def move(y:Int, x:Int, dirX:Int, dirY:Int): Boolean ={
-    if(grid(y)(x) > 0) {
-      if (grid(y + dirY)(x + dirX) == 0) {
-        grid(y + dirY)(x + dirX) = (grid(y)(x))
-        grid(y)(x) = 0
-        true
+  def move(y:Int, x:Int, dirX:Int, dirY:Int): Field ={
+    if(cells.cell(y, x) > 0) {
+      if (cells.cell(y + dirY, x + dirX) == 0) {
+        val newField = copy(cells.replaceCell(y + dirY, x + dirX, cells.cell(y, x)).replaceCell(y, x, 0))
+       // val newField1 = copy(newField.cells.replaceCell(y, x , 0))
+        newField
+        //cells.cell(y + dirY, x + dirX) = (cells.cell(y, x))
+        //cells.cell(y, x) = 0
+        //true
       }else{
-        false
+        this
       }
     }else{
-      false
+      this
     }
   }
 
@@ -65,7 +77,7 @@ class Field(size:Int) {
 
   def createRandom2(moved:Boolean): Unit = {
     if(moved){
-      createRandom()
+      //createRandom()
       if(!isMovePossible(0, 0, false)){
         loose()
       }
@@ -79,13 +91,13 @@ class Field(size:Int) {
       }else{
         if(y < size){
           if(i != (size / 2)) {
-              if(move(y, x, 1, 0)){
+              if(move(y, x, 1, 0) != this){
                 loop(i, x, y + 1, true)
               }else{
                 loop(i, x, y + 1, moved)
               }
           }else if(i == (size / 2)) {
-            if(addCells(y, x, 1, 0)){
+            if(addCells(y, x, 1, 0) != this){
               loop(i, x, y + 1, true)
             }else{
               loop(i, x, y + 1, moved)
@@ -110,13 +122,13 @@ class Field(size:Int) {
       }else{
         if(y < size){
           if(i != (size / 2)) {
-            if(move(y, x, -1, 0)){
+            if(move(y, x, -1, 0) != this){
               loop(i, x, y + 1, true)
             }else{
               loop(i, x, y + 1, moved)
             }
           }else if(i == (size / 2)) {
-            if(addCells(y, x, -1, 0)){
+            if(addCells(y, x, -1, 0) != this){
               loop(i, x, y + 1, true)
             }else{
               loop(i, x, y + 1, moved)
@@ -141,13 +153,13 @@ class Field(size:Int) {
       }else{
         if(y < size){
           if(i != (size / 2)) {
-            if(move(y, x, 0, -1)){
+            if(move(y, x, 0, -1) != this){
               loop(i, x, y + 1, true)
             }else{
               loop(i, x, y + 1, moved)
             }
           }else if(i == (size / 2)) {
-            if(addCells(y, x, 0, -1)){
+            if(addCells(y, x, 0, -1) != this){
               loop(i, x, y + 1, true)
             }else{
               loop(i, x, y + 1, moved)
@@ -172,13 +184,13 @@ class Field(size:Int) {
       }else{
         if(x < size){
           if(i != (size / 2)) {
-            if(move(y, x, 0, 1)){
+            if(move(y, x, 0, 1) != this){
               loop(i, x + 1, y, true)
             }else{
               loop(i, x + 1, y, moved)
             }
           }else if(i == (size / 2)) {
-            if(addCells(y, x, 0, 1)){
+            if(addCells(y, x, 0, 1) != this){
               loop(i, x + 1, y, true)
             }else{
               loop(i, x + 1, y, moved)
@@ -197,24 +209,25 @@ class Field(size:Int) {
   }
 
   def createRandom(): Unit ={
-    while(!createRandomHelper()){
+    while(createRandomHelper().cells == this.cells){
     }
   }
 
-  def createRandomHelper(): Boolean ={
+  def createRandomHelper(): Field ={
     val r = new scala.util.Random()
     val x: Int = r.nextInt(size)
     val y: Int = r.nextInt(size)
-    if(grid(x)(y) != 0){
-      false
+    if(cells.cell(x, y) != 0){
+      this
     }else{
       val value = r.nextInt(2)
       if(value == 0){
-        grid(x)(y) = 2
+        copy(cells.replaceCell(x, y, 2))
+        //cells.cell(x, y) = 2
       }else{
-        grid(x)(y) = value_four
+        copy(cells.replaceCell(x, y, value_four))
+        //cells.cell(x, y) = value_four
       }
-      true
     }
   }
 
@@ -222,11 +235,12 @@ class Field(size:Int) {
     print("No more moves possible. Click R to restart.\n")
   }
 
-  def restart(): Unit ={
+  /*def restart(): Field ={
     score = 0
     def loop(x:Int, y:Int): Unit={
       if(x != 4){
-        grid(x)(y) = 0
+        copy(cells.replaceCell(x, y, 0))
+        //cells.cell(x, y) = 0
         if(y < size - 1){
           loop(x, y + 1)
         }
@@ -236,7 +250,7 @@ class Field(size:Int) {
     loop(0, 0)
     createRandom()
     print("Restarted:\n")
-  }
+  }*/
 
   override def toString: String ={
     toStringHelper(0, 0, "Score: " + score + "\n|")
@@ -247,7 +261,7 @@ class Field(size:Int) {
       fieldString
     }else {
       if (j < size) {
-        toStringHelper(i, j + 1, fieldString + (grid(i)(j) + "\t|"))
+        toStringHelper(i, j + 1, fieldString + (cells.cell(i, j) + "\t|"))
       }else{
         if(i == (size - 1) && j == (size)){
           toStringHelper(i + 1, 0, fieldString + "\n")
