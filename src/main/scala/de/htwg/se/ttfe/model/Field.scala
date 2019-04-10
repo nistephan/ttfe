@@ -80,7 +80,7 @@ case class Field(cells: Matrix[Integer]) {
   }
 
   def createRandom2(field: Field): Field = {
-    if(field.cells != this.cells){
+    if(field.cells != this.cells){ //successful move
       createRandom(field, field)
       /*if(!isMovePossible(0, 0, false)){
         loose()
@@ -234,7 +234,7 @@ case class Field(cells: Matrix[Integer]) {
     val r = new scala.util.Random()
     val x: Int = r.nextInt(size)
     val y: Int = r.nextInt(size)
-    if(cells.cell(x, y) != 0){
+    if(field.cells.cell(x, y) != 0){
       field
     }else{
       val value = r.nextInt(2)
