@@ -1,22 +1,14 @@
 package de.htwg.se.ttfe.model
+import play.api.libs.json._
 
-
-//TODO case class, Vector, copy,
 case class Field(cells: Matrix[Integer]) {
-  //def this(size: Int) = this(new Matrix[Integer](size, 0))
   val value_four = 4
   val size = cells.size
-
-  //val grid: Array[Array[Int]] = Array.ofDim[Int](size, size)
   var score:Int = 0
-  //println("---------------------------------")
-  //print(this)
 
   def start(): Field ={
     createRandom(this, this)
   }
-
-  //def set(row: Int, col: Int, value: Int): Grid = copy(cells.replaceCell(row, col, Cell(value)))
 
   def isMovePossible(x: Int, y: Int, movePossible: Boolean): Boolean ={
     if(x == size){
@@ -40,11 +32,7 @@ case class Field(cells: Matrix[Integer]) {
         //TODO score
         score += field.cells.cell(y, x) + field.cells.cell(y + dirY, x + dirX)
         val newField = copy(field.cells.replaceCell(y + dirY, x + dirX, field.cells.cell(y, x) + field.cells.cell(y + dirY, x + dirX)).replaceCell(y, x, 0))
-       // val newField1 = copy(newField.cells.replaceCell(y, x, 0))
         newField
-        //cells.cell(y + dirY, x + dirX) = cells.cell(y, x) + cells.cell(y + dirY, x + dirX)
-        //cells.cell(y, x) = 0
-        //true
       }else{
         field
       }
@@ -57,11 +45,7 @@ case class Field(cells: Matrix[Integer]) {
     if(field.cells.cell(y, x) > 0) {
       if (field.cells.cell(y + dirY, x + dirX) == 0) {
         val newField = copy(field.cells.replaceCell(y + dirY, x + dirX, field.cells.cell(y, x)).replaceCell(y, x, 0))
-       // val newField1 = copy(newField.cells.replaceCell(y, x , 0))
         newField
-        //cells.cell(y + dirY, x + dirX) = (cells.cell(y, x))
-        //cells.cell(y, x) = 0
-        //true
       }else{
         field
       }
@@ -240,10 +224,8 @@ case class Field(cells: Matrix[Integer]) {
       val value = r.nextInt(2)
       if(value == 0){
         copy(field.cells.replaceCell(x, y, 2))
-        //cells.cell(x, y) = 2
       }else{
         copy(field.cells.replaceCell(x, y, value_four))
-        //cells.cell(x, y) = value_four
       }
     }
   }
@@ -288,4 +270,19 @@ case class Field(cells: Matrix[Integer]) {
       }
     }
   }
+
+  def toJson:JsValue = {
+    Json.obj("size" -> JsNumber(size),
+      "cells" -> Json.toJson(
+        for {row <- 0 until size;
+             col <- 0 until size} yield {
+          Json.obj(
+            "row" -> row,
+            "col" -> col,
+            "cell" -> JsNumber(BigDecimal(cells.cell(row, col))))
+        }
+      )
+    )
+  }
+
 }

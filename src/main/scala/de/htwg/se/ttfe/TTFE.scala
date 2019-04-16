@@ -2,19 +2,19 @@ package de.htwg.se.ttfe
 
 import de.htwg.se.ttfe.controller.Controller
 import de.htwg.se.ttfe.aview.Tui
-import de.htwg.se.ttfe.model.{Field, Matrix}
+import de.htwg.se.ttfe.model.{Field, FileIO, Matrix}
+import play.api.libs.json.{JsValue, Json}
 
+import scala.io.Source._
 import scala.io.StdIn.readLine
 
 object TTFE {
+    val fileIO = new FileIO
     val defaultFieldSize = 4
-    println("started")
-    val controller = new Controller(new Field(new Matrix[Integer](defaultFieldSize, 0)))
+    val controller = new Controller(fileIO.load)
     controller.field = controller.field.start
-    println("controller started")
     val tui = new Tui(controller)
     controller.notifyObservers
-    println("controller started")
 
 
     def main(args: Array[String]): Unit = {

@@ -13,9 +13,7 @@ class Tui (controller: Controller) extends Observer{
       case "s" => controller.moveDirection("D")
       case "d" => controller.moveDirection("R")
       case "r" => controller.restart()
-      case "e" =>
-        print("exiting\n")
-        sys.exit
+      case "e" => controller.exit
       case _ => print("False Input!\n")
     }
   }
