@@ -1,11 +1,9 @@
 package de.htwg.se.ttfe
 
-import de.htwg.se.ttfe.controller.Controller
+import de.htwg.se.ttfe.controller.{Controller, Restarted}
 import de.htwg.se.ttfe.aview.Tui
-import de.htwg.se.ttfe.model.{Field, FileIO, Matrix}
-import play.api.libs.json.{JsValue, Json}
-
-import scala.io.Source._
+import de.htwg.se.ttfe.aview.gui.SwingGui
+import de.htwg.se.ttfe.model.FileIO
 import scala.io.StdIn.readLine
 
 object TTFE {
@@ -14,7 +12,8 @@ object TTFE {
     val controller = new Controller(fileIO.load)
     controller.field = controller.field.start
     val tui = new Tui(controller)
-    controller.notifyObservers
+    val gui = new SwingGui(controller)
+    controller.publish(new Restarted)
 
 
     def main(args: Array[String]): Unit = {

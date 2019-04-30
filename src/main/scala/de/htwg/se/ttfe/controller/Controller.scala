@@ -1,11 +1,11 @@
 package de.htwg.se.ttfe.controller
 
 import java.io.{File, PrintWriter}
-
 import de.htwg.se.ttfe.model.Field
-import de.htwg.se.ttfe.util.Observable
+import scala.swing.Publisher
 
-class Controller(var field:Field) extends Observable{
+class Controller(var field:Field) extends Publisher {
+
 
   /*def createNewField(size:Int):Unit = {
     field = new Field(size)
@@ -24,12 +24,12 @@ class Controller(var field:Field) extends Observable{
 
   def moveDirection(direction: String):Unit = {
     field = field.moveDirection(direction)
-    notifyObservers
+    publish(new Moved)
   }
 
   def restart(): Unit = {
     //field.restart()
-    notifyObservers
+    publish(new Restarted)
   }
 
 }
