@@ -1,6 +1,6 @@
 package de.htwg.se.ttfe.model
 
-import de.htwg.se.ttfe.model.fieldComponent.{Field, Matrix}
+import de.htwg.se.ttfe.model.fieldComponent.fieldBaseImpl.{Field, Matrix}
 import play.api.libs.json.{JsValue, Json}
 
 import scala.io.Source

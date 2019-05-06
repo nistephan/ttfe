@@ -1,11 +1,11 @@
 package de.htwg.se.ttfe.aview.gui
 
-import de.htwg.se.ttfe.controller.Controller
+import de.htwg.se.ttfe.controller.{Controller, ControllerInterface}
 
 import scala.swing._
 
-class CellPanel(row: Int, column: Int, controller: Controller) extends FlowPanel {
-  def myCell = controller.field.cells.cell(row, column)
+class CellPanel(row: Int, column: Int, controller: ControllerInterface) extends FlowPanel {
+  def myCell = controller.cell(row, column)
   val label =
     new Label {
       text = myCell.toString

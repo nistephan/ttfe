@@ -1,6 +1,6 @@
 package de.htwg.se.ttfe.model
 
-import de.htwg.se.ttfe.model.fieldComponent.Field
+import de.htwg.se.ttfe.model.fieldComponent.fieldBaseImpl.Field
 
 class FileIOInterface {
 

@@ -1,11 +1,11 @@
 package de.htwg.se.ttfe.aview
 
-import de.htwg.se.ttfe.controller.{Controller, Moved, Restarted}
+import de.htwg.se.ttfe.controller.{Controller, ControllerInterface, Moved, Restarted}
 import de.htwg.se.ttfe.util.Observer
 
 import scala.swing.Reactor
 
-class Tui (controller: Controller) extends Reactor{
+class Tui (controller: ControllerInterface) extends Reactor{
 
   listenTo(controller)
   //controller.add(this)

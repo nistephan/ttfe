@@ -1,6 +1,6 @@
-package de.htwg.se.ttfe.model.fieldComponent
+package de.htwg.se.ttfe.model.fieldComponent.fieldBaseImpl
 
-case class Matrix[T](rows: Vector[Vector[T]]) {
+case class Matrix[T] (rows: Vector[Vector[T]]) {
 
   def this(size: Int, filling: T) =
     this(Vector.tabulate(size, size) { (row, col) =>

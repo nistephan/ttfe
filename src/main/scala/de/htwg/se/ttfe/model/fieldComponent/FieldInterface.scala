@@ -1,20 +1,23 @@
 package de.htwg.se.ttfe.model.fieldComponent
 
+import de.htwg.se.ttfe.model.fieldComponent.fieldBaseImpl.Matrix
 import play.api.libs.json.JsValue
 
 trait FieldInterface {
-  def start(): Field
+  def cellsField: Matrix[Integer]
+  def size: Int
+  def start(): FieldInterface
   def isMovePossible(x: Int, y: Int, movePossible: Boolean): Boolean
-  def addCells(y:Int, x:Int, dirX:Int, dirY:Int, field: Field): Field
-  def move(y:Int, x:Int, dirX:Int, dirY:Int, field: Field): Field
-  def moveDirection(direction:String): Field
-  def createRandom2(field: Field): Field
-  def moveRight() : Field
-  def moveLeft() : Field
-  def moveUp() : Field
-  def moveDown() : Field
-  def createRandom(field: Field, fieldOld: Field): Field
-  def createRandomHelper(field: Field): Field
+  def addCells(y:Int, x:Int, dirX:Int, dirY:Int, field: FieldInterface): FieldInterface
+  def move(y:Int, x:Int, dirX:Int, dirY:Int, field: FieldInterface): FieldInterface
+  def moveDirection(direction:String): FieldInterface
+  def createRandom2(field: FieldInterface): FieldInterface
+  def moveRight() : FieldInterface
+  def moveLeft() : FieldInterface
+  def moveUp() : FieldInterface
+  def moveDown() : FieldInterface
+  def createRandom(field: FieldInterface, fieldOld: FieldInterface): FieldInterface
+  def createRandomHelper(field: FieldInterface): FieldInterface
   def loose(): Unit
   override def toString: String
   def toStringHelper(i:Int, j: Int, fieldString: String): String

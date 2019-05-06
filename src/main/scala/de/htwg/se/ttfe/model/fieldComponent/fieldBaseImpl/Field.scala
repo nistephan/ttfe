@@ -1,15 +1,24 @@
-package de.htwg.se.ttfe.model.fieldComponent
+package de.htwg.se.ttfe.model.fieldComponent.fieldBaseImpl
 
-import Matrix
+import de.htwg.se.ttfe.model.fieldComponent.FieldInterface
 import play.api.libs.json.{JsNumber, JsValue, Json}
 
-case class Field(cells: Matrix[Integer]) extends FieldInterface {
+case class Field (cells: Matrix[Integer]) extends FieldInterface {
+  def this(size: Int) = this(new Matrix[Integer](size, 0))
   val value_four = 4
-  val size = cells.size
+  val sizeI = cells.size
   var score:Int = 0
 
-  def start(): Field ={
+  def size: Int={
+    sizeI
+  }
+
+  def start(): FieldInterface ={
     createRandom(this, this)
+  }
+
+  def cellsField: Matrix[Integer]={
+    cells
   }
 
   def isMovePossible(x: Int, y: Int, movePossible: Boolean): Boolean ={
@@ -28,12 +37,12 @@ case class Field(cells: Matrix[Integer]) extends FieldInterface {
     }
   }
 
-  def addCells(y:Int, x:Int, dirX:Int, dirY:Int, field: Field): Field ={
-    if(field.cells.cell(y, x) > 0) {
-      if (field.cells.cell(y, x) == field.cells.cell(y + dirY, x + dirX)) {
+  def addCells(y:Int, x:Int, dirX:Int, dirY:Int, field: FieldInterface): FieldInterface ={
+    if(field.cellsField.cell(y, x) > 0) {
+      if (field.cellsField.cell(y, x) == field.cellsField.cell(y + dirY, x + dirX)) {
         //TODO score
-        score += field.cells.cell(y, x) + field.cells.cell(y + dirY, x + dirX)
-        val newField = copy(field.cells.replaceCell(y + dirY, x + dirX, field.cells.cell(y, x) + field.cells.cell(y + dirY, x + dirX)).replaceCell(y, x, 0))
+        score += field.cellsField.cell(y, x) + field.cellsField.cell(y + dirY, x + dirX)
+        val newField = copy(field.cellsField.replaceCell(y + dirY, x + dirX, field.cellsField.cell(y, x) + field.cellsField.cell(y + dirY, x + dirX)).replaceCell(y, x, 0))
         newField
       }else{
         field
@@ -43,10 +52,10 @@ case class Field(cells: Matrix[Integer]) extends FieldInterface {
     }
   }
 
-  def move(y:Int, x:Int, dirX:Int, dirY:Int, field: Field): Field ={
-    if(field.cells.cell(y, x) > 0) {
-      if (field.cells.cell(y + dirY, x + dirX) == 0) {
-        val newField = copy(field.cells.replaceCell(y + dirY, x + dirX, field.cells.cell(y, x)).replaceCell(y, x, 0))
+  def move(y:Int, x:Int, dirX:Int, dirY:Int, field: FieldInterface): FieldInterface ={
+    if(field.cellsField.cell(y, x) > 0) {
+      if (field.cellsField.cell(y + dirY, x + dirX) == 0) {
+        val newField = copy(field.cellsField.replaceCell(y + dirY, x + dirX, field.cellsField.cell(y, x)).replaceCell(y, x, 0))
         newField
       }else{
         field
@@ -56,7 +65,7 @@ case class Field(cells: Matrix[Integer]) extends FieldInterface {
     }
   }
 
-  def moveDirection(direction:String): Field = {
+  def moveDirection(direction:String): FieldInterface = {
     direction match {
       case "R" => createRandom2(moveRight)
       case "L" => createRandom2(moveLeft)
@@ -65,8 +74,8 @@ case class Field(cells: Matrix[Integer]) extends FieldInterface {
     }
   }
 
-  def createRandom2(field: Field): Field = {
-    if(field.cells != this.cells){ //successful move
+  def createRandom2(field: FieldInterface): FieldInterface = {
+    if(field.cellsField != this.cells){ //successful move
       createRandom(field, field)
       /*if(!isMovePossible(0, 0, false)){
         loose()
@@ -76,22 +85,22 @@ case class Field(cells: Matrix[Integer]) extends FieldInterface {
     }
   }
 
-  def moveRight() : Field = {
-    def loop(i:Int, x:Int, y:Int, moved:Boolean, field: Field): Field={
+  def moveRight() : FieldInterface = {
+    def loop(i:Int, x:Int, y:Int, moved:Boolean, field: FieldInterface): FieldInterface={
       if(i == (size - 1 + (size / 2))){
           field
       }else{
         if(y < size){
           if(i != (size / 2)) {
               val tmpField = move(y, x, 1, 0, field)
-              if(tmpField.cells != this.cells){
+              if(tmpField.cellsField != this.cells){
                 loop(i, x, y + 1, true, tmpField)
               }else{
                 loop(i, x, y + 1, moved, field)
               }
           }else if(i == (size / 2)) {
             val tmpField2 = addCells(y, x, 1, 0, field)
-            if(tmpField2.cells != this.cells){
+            if(tmpField2.cellsField != this.cells){
               loop(i, x, y + 1, true, tmpField2)
             }else{
               loop(i, x, y + 1, moved, field)
@@ -109,22 +118,22 @@ case class Field(cells: Matrix[Integer]) extends FieldInterface {
     loop(0, (size - 2), 0, false, this)
   }
 
-  def moveLeft() : Field = {
-    def loop(i:Int, x:Int, y:Int, moved:Boolean, field: Field): Field={
+  def moveLeft() : FieldInterface = {
+    def loop(i:Int, x:Int, y:Int, moved:Boolean, field: FieldInterface): FieldInterface={
       if(i == (size - 1 + (size / 2))){
         field
       }else{
         if(y < size){
           if(i != (size / 2)) {
             val tmpField = move(y, x, -1, 0, field)
-            if(tmpField.cells != this.cells){
+            if(tmpField.cellsField != this.cells){
               loop(i, x, y + 1, true, tmpField)
             }else{
               loop(i, x, y + 1, moved, field)
             }
           }else if(i == (size / 2)) {
             val tmpField2 = addCells(y, x, -1, 0, field)
-            if(tmpField2.cells != this.cells){
+            if(tmpField2.cellsField != this.cells){
               loop(i, x, y + 1, true, tmpField2)
             }else{
               loop(i, x, y + 1, moved, field)
@@ -142,22 +151,22 @@ case class Field(cells: Matrix[Integer]) extends FieldInterface {
     loop(0, 1, 0, false, this)
   }
 
-  def moveUp() : Field = {
-    def loop(i:Int, x:Int, y:Int, moved:Boolean, field: Field): Field={
+  def moveUp() : FieldInterface = {
+    def loop(i:Int, x:Int, y:Int, moved:Boolean, field: FieldInterface): FieldInterface={
       if(i == (size - 1 + (size / 2))){
         field
       }else{
         if(y < size){
           if(i != (size / 2)) {
             val tmpField = move(y, x, 0, -1, field)
-            if(tmpField.cells != this.cells){
+            if(tmpField.cellsField != this.cells){
               loop(i, x, y + 1, true, tmpField)
             }else{
               loop(i, x, y + 1, moved, field)
             }
           }else if(i == (size / 2)) {
             val tmpField2 = addCells(y, x, 0, -1, field)
-            if(tmpField2.cells != this.cells){
+            if(tmpField2.cellsField != this.cells){
               loop(i, x, y + 1, true, tmpField2)
             }else{
               loop(i, x, y + 1, moved, field)
@@ -175,22 +184,22 @@ case class Field(cells: Matrix[Integer]) extends FieldInterface {
     loop(0, 0, 1, false, this)
   }
 
-  def moveDown() : Field = {
-    def loop(i:Int, x:Int, y:Int, moved:Boolean, field: Field): Field={
+  def moveDown() : FieldInterface = {
+    def loop(i:Int, x:Int, y:Int, moved:Boolean, field: FieldInterface): FieldInterface={
       if(i == (size - 1 + (size / 2))){
         field
       }else{
         if(x < size){
           if(i != (size / 2)) {
             val tmpField = move(y, x, 0, 1, field)
-            if(tmpField.cells != this.cells){
+            if(tmpField.cellsField != this.cells){
               loop(i, x + 1, y, true, tmpField)
             }else{
               loop(i, x + 1, y, moved, field)
             }
           }else if(i == (size / 2)) {
             val tmpField2 = addCells(y, x, 0, 1, field)
-            if(tmpField2.cells != this.cells){
+            if(tmpField2.cellsField != this.cells){
               loop(i, x + 1, y, true, tmpField2)
             }else{
               loop(i, x + 1, y, moved, field)
@@ -208,26 +217,26 @@ case class Field(cells: Matrix[Integer]) extends FieldInterface {
     loop(0, 0, (size - 2), false, this)
   }
 
-  def createRandom(field: Field, fieldOld: Field): Field ={
-    if(field.cells != fieldOld.cells){
+  def createRandom(field: FieldInterface, fieldOld: FieldInterface): FieldInterface ={
+    if(field.cellsField != fieldOld.cellsField){
       field
     }else{
       createRandom(createRandomHelper(field), fieldOld)
     }
   }
 
-  def createRandomHelper(field: Field): Field ={
+  def createRandomHelper(field: FieldInterface): FieldInterface ={
     val r = new scala.util.Random()
     val x: Int = r.nextInt(size)
     val y: Int = r.nextInt(size)
-    if(field.cells.cell(x, y) != 0){
+    if(field.cellsField.cell(x, y) != 0){
       field
     }else{
       val value = r.nextInt(2)
       if(value == 0){
-        copy(field.cells.replaceCell(x, y, 2))
+        copy(field.cellsField.replaceCell(x, y, 2))
       }else{
-        copy(field.cells.replaceCell(x, y, value_four))
+        copy(field.cellsField.replaceCell(x, y, value_four))
       }
     }
   }
