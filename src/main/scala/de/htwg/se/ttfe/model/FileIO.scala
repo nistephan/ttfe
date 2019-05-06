@@ -1,13 +1,18 @@
 package de.htwg.se.ttfe.model
 
+import java.io.{File, PrintWriter}
+
+import com.google.inject.Guice
+import de.htwg.se.ttfe.TTFEModule
+import de.htwg.se.ttfe.model.fieldComponent.FieldInterface
 import de.htwg.se.ttfe.model.fieldComponent.fieldBaseImpl.{Field, Matrix}
 import play.api.libs.json.{JsValue, Json}
 
 import scala.io.Source
 
 class FileIO extends FileIOInterface {
-
-   def load: Field = {
+  def load: FieldInterface = {
+    val injector = Guice.createInjector(new TTFEModule)
      val source: String = Source.fromFile("src/main/resources/grid.json").getLines.mkString
      val json: JsValue = Json.parse(source)
      val size = (json \ "size").get.toString.toInt
@@ -24,6 +29,12 @@ class FileIO extends FileIOInterface {
      }
      val matrix = loop(0, new Matrix[Integer](size, 0))
      new Field(matrix)
+  }
+
+  def save(field: FieldInterface): Unit ={
+    val pw = new PrintWriter(new File("src/main/resources/grid.json" ))
+    pw.write(field.toJson.toString())
+    pw.close
   }
 
 }
