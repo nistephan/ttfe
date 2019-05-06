@@ -1,7 +1,9 @@
-package de.htwg.se.ttfe.model
-import play.api.libs.json._
+package de.htwg.se.ttfe.model.fieldComponent
 
-case class Field(cells: Matrix[Integer]) {
+import Matrix
+import play.api.libs.json.{JsNumber, JsValue, Json}
+
+case class Field(cells: Matrix[Integer]) extends FieldInterface {
   val value_four = 4
   val size = cells.size
   var score:Int = 0

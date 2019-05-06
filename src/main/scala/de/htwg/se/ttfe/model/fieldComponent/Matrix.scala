@@ -1,4 +1,4 @@
-package de.htwg.se.ttfe.model
+package de.htwg.se.ttfe.model.fieldComponent
 
 case class Matrix[T](rows: Vector[Vector[T]]) {
 

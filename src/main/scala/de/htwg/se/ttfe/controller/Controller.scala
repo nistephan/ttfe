@@ -1,10 +1,12 @@
 package de.htwg.se.ttfe.controller
 
 import java.io.{File, PrintWriter}
-import de.htwg.se.ttfe.model.Field
+
+import de.htwg.se.ttfe.model.fieldComponent.Field
+
 import scala.swing.Publisher
 
-class Controller(var field:Field) extends Publisher {
+class Controller(var field:Field)  extends ControllerInterface with Publisher {
 
 
   /*def createNewField(size:Int):Unit = {
