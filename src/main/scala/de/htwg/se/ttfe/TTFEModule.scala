@@ -17,7 +17,6 @@ class TTFEModule extends AbstractModule with ScalaModule {
     bind[FieldInterface].to[Field]
     bind[FieldInterface].annotatedWithName("default").toInstance(new Field(4))
     bind[ControllerInterface].to[Controller]
-
     bind[FileIOInterface].to[FileIO]
   }
 }
