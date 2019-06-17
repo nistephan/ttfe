@@ -1,9 +1,7 @@
 package de.htwg.se.ttfe.controller
 
-import java.io.{File, PrintWriter}
 import net.codingwell.scalaguice.InjectorExtensions._
 import com.google.inject.{Guice, Inject}
-import com.google.inject.name.Names
 import de.htwg.se.ttfe.TTFEModule
 import de.htwg.se.ttfe.model.FileIOInterface
 import de.htwg.se.ttfe.model.fieldComponent.FieldInterface
