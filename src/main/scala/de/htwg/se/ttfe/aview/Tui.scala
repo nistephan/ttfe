@@ -19,8 +19,8 @@ class Tui (controller: ControllerInterface) extends Reactor{
       case "s" => controller.moveDirection("D")
       case "d" => controller.moveDirection("R")
       case "r" => controller.restart
-      case "load" =>  resolver ! "load"
-      case "save" => resolver ! "save"
+      case "load" =>  controller.load
+      case "save" => controller.save
       case "e" => controller.exit
       case "e " => controller.exit
       case _ => print("False Input!\n")

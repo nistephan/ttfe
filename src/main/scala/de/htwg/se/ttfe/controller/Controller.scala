@@ -34,6 +34,21 @@ class Controller @Inject() (var field:FieldInterface) extends ControllerInterfac
     sys.exit
   }
 
+  def save ={
+    fileIo.save(field)
+  }
+
+  def load ={
+    println("load")
+    fileIo.load match {
+      case Some(field) =>
+        this.field = field
+      case None =>
+        println("No save")
+    }
+    publish(new Moved)
+  }
+
   def fieldToString: String = field.toString
 
   def moveDirection(direction: String):Unit = {

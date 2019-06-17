@@ -8,7 +8,9 @@ trait ControllerInterface extends Publisher {
   def exit: Unit
   def fieldToString: String
   def moveDirection(direction: String):Unit
-  def restart(): Unit
+  def restart: Unit
+  def load: Unit
+  def save: Unit
 }
 
 

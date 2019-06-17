@@ -14,7 +14,8 @@ import scala.util.{Failure, Success, Try}
 class FileIO extends FileIOInterface {
 
   def load: Option[FieldInterface] = {
-    Try(Source.fromFile("src/main/resources/grid.json").getLines.mkString) match {
+    val data =
+      Try(Source.fromFile("src/main/resources/grid.json").getLines.mkString) match {
       case Success(v) =>
         val json: JsValue = Json.parse(v)
         val size = (json \ "size").get.toString.toInt
@@ -32,6 +33,7 @@ class FileIO extends FileIOInterface {
         Some(new Field(matrix))
       case Failure(_) => None
     }
+    data
   }
 
   def save(field: FieldInterface): Unit ={
