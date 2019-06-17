@@ -18,7 +18,6 @@ class FileIO extends FileIOInterface {
   }
 
   def load: FieldInterface = {
-    //val injector = Guice.createInjector(new TTFEModule)
     readFile("src/main/resources/grid.json") match {
       case Success(v) =>
         val json: JsValue = Json.parse(v)
