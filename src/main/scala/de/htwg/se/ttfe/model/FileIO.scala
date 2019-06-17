@@ -13,12 +13,8 @@ import scala.util.{Failure, Success, Try}
 
 class FileIO extends FileIOInterface {
 
-  def readFile(filename: String): Try[String] = {
-    Try(Source.fromFile(filename).getLines.mkString)
-  }
-
-  def load: FieldInterface = {
-    readFile("src/main/resources/grid.json") match {
+  def load: Option[FieldInterface] = {
+    Try(Source.fromFile("src/main/resources/grid.json").getLines.mkString) match {
       case Success(v) =>
         val json: JsValue = Json.parse(v)
         val size = (json \ "size").get.toString.toInt
@@ -33,10 +29,8 @@ class FileIO extends FileIOInterface {
           }
         }
         val matrix = loop(0, new Matrix[Integer](size, 0))
-        new Field(matrix)
-      case Failure(f) =>
-        println("Error: " + f.getMessage)
-        new Field(4)
+        Some(new Field(matrix))
+      case Failure(_) => None
     }
   }
 

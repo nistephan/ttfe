@@ -9,20 +9,20 @@ import de.htwg.se.ttfe.model.FileIO
 import scala.io.StdIn.readLine
 
 object TTFE {
-    val injector = Guice.createInjector(new TTFEModule)
-    val controller = injector.getInstance(classOf[ControllerInterface])
+  val injector = Guice.createInjector(new TTFEModule)
+  val controller = injector.getInstance(classOf[ControllerInterface])
 
-    val fileIO = new FileIO
-   // val controller = new Controller(fileIO.load)
+  val fileIO = new FileIO
+  // val controller = new Controller(fileIO.load)
 
-    val tui = new Tui(controller)
-    val gui = new SwingGui(controller)
-    controller.publish(new Restarted)
+  val tui = new Tui(controller)
+  val gui = new SwingGui(controller)
+  controller.publish(new Restarted)
 
 
-    def main(args: Array[String]): Unit = {
-      while (true) {
-        tui.processInputLine(readLine())
-      }
+  def main(args: Array[String]): Unit = {
+    while (true) {
+      tui.processInputLine(readLine())
     }
+  }
 }
