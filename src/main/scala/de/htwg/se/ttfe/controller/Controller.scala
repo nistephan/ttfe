@@ -29,22 +29,22 @@ class Controller @Inject() (var field:FieldInterface) extends ControllerInterfac
   }
 
   def exit: Unit = {
-    fileIo.save(field)
     print("exiting\n")
     sys.exit
   }
 
-  def save ={
+  def save: Unit ={
     fileIo.save(field)
+    print("Saved!\n")
   }
 
-  def load ={
-    println("load")
+  def load: Unit ={
+    print("Loading\n")
     fileIo.load match {
       case Some(field) =>
         this.field = field
       case None =>
-        println("No save")
+        print("No save!\n")
     }
     publish(new Moved)
   }
