@@ -1,0 +1,19 @@
+ersion: '3'
+services:
+  main-service:
+    build:
+      context: .
+      dockerfile: MainDocker
+    volumes:
+    - .:/main
+    ports:
+    - 8080:8080
+
+  counter-service:
+    build:
+      context: .
+      dockerfile: CounterServiceDocker
+    volumes:
+    - .:/main
+    ports:
+    - 8081:8081
