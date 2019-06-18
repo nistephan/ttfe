@@ -32,62 +32,44 @@ class Rest(controller: ControllerInterface) {
     path("2048") {
       printTui
     } ~
+      path("2048" / "load") {
+        controller.load
+        printTui
+      } ~
+      path("2048" / "save") {
+        controller.save
+        printTui
+      } ~
       path("2048" / Segment) {
         command => {
-          Await.result((cmdActor ? Command(command)).mapTo[Int], 5 seconds) match {
-            case 0 => printTui
-            case 1 => printWin
-            case 2 => printLose
-            case 3 => printHelp
-          }
+          processInputLine(command)
+          printTui
         }
-      } ~
-      path("counter" / Segment) {
-        command =>
-          complete(HttpEntity(ContentTypes.`text/html(UTF-8)`,
-            scalaj.http.Http("http://0.0.0.0:8081/" + command).param("", "").asString.body)) // Bugged?
-      } ~
-      path("highscore" / Segment) {
-        command =>
-          complete(HttpEntity(ContentTypes.`text/html(UTF-8)`,
-            scalaj.http.Http("http://0.0.0.0:8082/" + command).param("", "").asString.body)) // Bugged?
       }
   }
 
   def printTui: StandardRoute = {
     println("Turn made with REST!")
-    println
 
     complete(HttpEntity(ContentTypes.`text/html(UTF-8)`,
       "<h1>2048</h1>" + controller.fieldToString.toString + "\n"))
   }
 
-  def printWin: StandardRoute = {
-    println("Game won with REST!")
-    println
-
-    complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>2048</h1> You won!" + "\n"))
-  }
-
-  def printLose: StandardRoute = {
-    println("Game lost with REST!")
-    println
-
-    complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>2048</h1> You lost!" + "\n"))
-  }
-
-  def printHelp: StandardRoute = {
-    println("Called help with REST!")
-    println
-
-    complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>2048</h1>"))
-  }
-
   val bindingFuture = Http().bindAndHandle(route, "0.0.0.0", 8080)
 
-  def unbind = {
+  def unbind: Unit = {
     bindingFuture
       .flatMap(_.unbind()) // trigger unbinding from the port
       .onComplete(_ => system.terminate()) // and shutdown when done
+  }
+
+  def processInputLine(input: String): Unit = {
+    input match {
+      case "L" => controller.moveDirection("L")
+      case "R" => controller.moveDirection("R")
+      case "D" => controller.moveDirection("D")
+      case "U" => controller.moveDirection("U")
+      case _ =>
+    }
   }
 }
