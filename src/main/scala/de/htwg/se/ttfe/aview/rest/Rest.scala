@@ -40,6 +40,10 @@ class Rest(controller: ControllerInterface) {
         controller.save
         printTui
       } ~
+      path("2048" / "new") {
+        controller.restart
+        printTui
+      } ~
       path("2048" / Segment) {
         command => {
           processInputLine(command)

@@ -5,6 +5,7 @@ import com.google.inject.{Guice, Inject}
 import de.htwg.se.ttfe.TTFEModule
 import de.htwg.se.ttfe.model.FileIOInterface
 import de.htwg.se.ttfe.model.fieldComponent.FieldInterface
+import de.htwg.se.ttfe.model.fieldComponent.fieldBaseImpl.Field
 
 import scala.swing.Publisher
 
@@ -13,10 +14,6 @@ class Controller @Inject() (var field:FieldInterface) extends ControllerInterfac
   val injector = Guice.createInjector(new TTFEModule)
   val fileIo = injector.instance[FileIOInterface]
   field = field.start()
-  /*def createNewField(size:Int):Unit = {
-    field = new Field(size)
-    notifyObservers
-  }*/
 
   def size: Int ={
     field.size
@@ -55,7 +52,8 @@ class Controller @Inject() (var field:FieldInterface) extends ControllerInterfac
   }
 
   def restart(): Unit = {
-    //field.restart()
+    field = new Field(size)
+    field = field.start()
     publish(new Restarted)
   }
 
