@@ -4,7 +4,7 @@ import de.htwg.se.ttfe.model.fieldComponent.FieldInterface
 import de.htwg.se.ttfe.model.fieldComponent.fieldBaseImpl.Matrix
 import play.api.libs.json.JsValue
 
-class Field (var size:Int) extends FieldInterface{
+class Field (var size:Int, var score: Int) extends FieldInterface{
   override def cellsField: Matrix[Integer] = null
 
   override def start(): FieldInterface = this

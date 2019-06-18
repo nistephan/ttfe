@@ -5,6 +5,7 @@ import play.api.libs.json.JsValue
 
 trait FieldInterface {
   def cellsField: Matrix[Integer]
+  def score: Int
   def size: Int
   def start(): FieldInterface
   def isMovePossible(x: Int, y: Int, movePossible: Boolean): Boolean

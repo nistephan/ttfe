@@ -5,14 +5,10 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{Route, StandardRoute}
-import akka.pattern.ask
 import akka.stream.ActorMaterializer
 import akka.util.Timeout
 import de.htwg.se.ttfe.controller.ControllerInterface
-import de.htwg.se.ttfe.controller.actorBaseImpl.CommandMessage.Command
 import de.htwg.se.ttfe.controller.actorBaseImpl.{CommandActor, TurnAsInstance}
-
-import scala.concurrent.Await
 import scala.concurrent.duration._
 
 class Rest(controller: ControllerInterface) {

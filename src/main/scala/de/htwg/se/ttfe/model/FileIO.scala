@@ -19,6 +19,7 @@ class FileIO extends FileIOInterface {
       case Success(v) =>
         val json: JsValue = Json.parse(v)
         val size = (json \ "size").get.toString.toInt
+        val score = (json \ "score").get.toString.toInt
         def loop(index: Int, matrix: Matrix[Integer]): Matrix[Integer] ={
           if(index != size * size){
             val row = (json \\ "row") (index).as[Int]
@@ -30,7 +31,7 @@ class FileIO extends FileIOInterface {
           }
         }
         val matrix = loop(0, new Matrix[Integer](size, 0))
-        Some(new Field(matrix))
+        Some(new Field(matrix, score))
       case Failure(_) => None
     }
     data

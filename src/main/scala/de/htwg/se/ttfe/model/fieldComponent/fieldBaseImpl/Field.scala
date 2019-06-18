@@ -3,11 +3,11 @@ package de.htwg.se.ttfe.model.fieldComponent.fieldBaseImpl
 import de.htwg.se.ttfe.model.fieldComponent.FieldInterface
 import play.api.libs.json.{JsNumber, JsValue, Json}
 
-case class Field (cells: Matrix[Integer]) extends FieldInterface {
-  def this(size: Int) = this(new Matrix[Integer](size, 0))
+case class Field (cells: Matrix[Integer], score: Int) extends FieldInterface {
+  def this(size: Int) = this(new Matrix[Integer](size, 0), 0)
   val value_four = 4
   val sizeI = cells.size
-  var score:Int = 0
+  var scoreI:Int = score
 
   def size: Int={
     sizeI
@@ -40,9 +40,9 @@ case class Field (cells: Matrix[Integer]) extends FieldInterface {
   def addCells(y:Int, x:Int, dirX:Int, dirY:Int, field: FieldInterface): FieldInterface ={
     if(field.cellsField.cell(y, x) > 0) {
       if (field.cellsField.cell(y, x) == field.cellsField.cell(y + dirY, x + dirX)) {
-        //TODO score
-        score += field.cellsField.cell(y, x) + field.cellsField.cell(y + dirY, x + dirX)
-        val newField = copy(field.cellsField.replaceCell(y + dirY, x + dirX, field.cellsField.cell(y, x) + field.cellsField.cell(y + dirY, x + dirX)).replaceCell(y, x, 0))
+        scoreI += field.cellsField.cell(y, x) + field.cellsField.cell(y + dirY, x + dirX)
+        val newField = new Field(field.cellsField.replaceCell(y + dirY, x + dirX, field.cellsField.cell(y, x) +
+          field.cellsField.cell(y + dirY, x + dirX)).replaceCell(y, x, 0), scoreI)
         newField
       }else{
         field
@@ -55,7 +55,7 @@ case class Field (cells: Matrix[Integer]) extends FieldInterface {
   def move(y:Int, x:Int, dirX:Int, dirY:Int, field: FieldInterface): FieldInterface ={
     if(field.cellsField.cell(y, x) > 0) {
       if (field.cellsField.cell(y + dirY, x + dirX) == 0) {
-        val newField = copy(field.cellsField.replaceCell(y + dirY, x + dirX, field.cellsField.cell(y, x)).replaceCell(y, x, 0))
+        val newField = new Field(field.cellsField.replaceCell(y + dirY, x + dirX, field.cellsField.cell(y, x)).replaceCell(y, x, 0), field.score)
         newField
       }else{
         field
@@ -229,14 +229,15 @@ case class Field (cells: Matrix[Integer]) extends FieldInterface {
     val r = new scala.util.Random()
     val x: Int = r.nextInt(size)
     val y: Int = r.nextInt(size)
+    val scoreRn: Int = field.score
     if(field.cellsField.cell(x, y) != 0){
       field
     }else{
       val value = r.nextInt(2)
       if(value == 0){
-        copy(field.cellsField.replaceCell(x, y, 2))
+        new Field(field.cellsField.replaceCell(x, y, 2), scoreRn)
       }else{
-        copy(field.cellsField.replaceCell(x, y, value_four))
+        new Field(field.cellsField.replaceCell(x, y, value_four), scoreRn)
       }
     }
   }
@@ -244,23 +245,6 @@ case class Field (cells: Matrix[Integer]) extends FieldInterface {
   def loose(): Unit ={
     print("No more moves possible. Click R to restart.\n")
   }
-
-  /*def restart(): Field ={
-    score = 0
-    def loop(x:Int, y:Int): Unit={
-      if(x != 4){
-        copy(cells.replaceCell(x, y, 0))
-        //cells.cell(x, y) = 0
-        if(y < size - 1){
-          loop(x, y + 1)
-        }
-        loop(x + 1, 0)
-      }
-    }
-    loop(0, 0)
-    createRandom()
-    print("Restarted:\n")
-  }*/
 
   override def toString: String ={
     toStringHelper(0, 0, "Score: " + score + "\n|")
@@ -283,7 +267,7 @@ case class Field (cells: Matrix[Integer]) extends FieldInterface {
   }
 
   def toJson:JsValue = {
-    Json.obj("size" -> JsNumber(size),
+    Json.obj("size" -> JsNumber(size), "score" -> JsNumber(score),
       "cells" -> Json.toJson(
         for {row <- 0 until size;
              col <- 0 until size} yield {
