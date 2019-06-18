@@ -33,7 +33,7 @@ class Rest(controller: ControllerInterface) {
         printTui
       } ~
       path("2048" / "save") {
-        controller.save
+        controller.saveGrid("test")
         printTui
       } ~
       path("2048" / "new") {

@@ -11,6 +11,14 @@ trait ControllerInterface extends Publisher {
   def restart: Unit
   def load: Unit
   def save: Unit
+
+  def getGridById(id: Int): (Int, String)
+
+  def getAllGrids: List[(Int, String)]
+
+  def deleteGridById(id: Int): Boolean
+
+  def saveGrid(grid: String): Unit
 }
 
 

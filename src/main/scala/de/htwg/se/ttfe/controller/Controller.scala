@@ -4,6 +4,7 @@ import net.codingwell.scalaguice.InjectorExtensions._
 import com.google.inject.{Guice, Inject}
 import de.htwg.se.ttfe.TTFEModule
 import de.htwg.se.ttfe.model.FileIOInterface
+import de.htwg.se.ttfe.model.daoComponent.DAOInterface
 import de.htwg.se.ttfe.model.fieldComponent.FieldInterface
 import de.htwg.se.ttfe.model.fieldComponent.fieldBaseImpl.Field
 
@@ -13,6 +14,8 @@ class Controller @Inject() (var field:FieldInterface) extends ControllerInterfac
 
   val injector = Guice.createInjector(new TTFEModule)
   val fileIo = injector.instance[FileIOInterface]
+  var db: DAOInterface = injector.instance[DAOInterface]
+
   field = field.start()
 
   def size: Int ={
@@ -56,5 +59,17 @@ class Controller @Inject() (var field:FieldInterface) extends ControllerInterfac
     field = field.start()
     publish(new Restarted)
   }
+
+  def saveGrid(grid: String): Unit = {
+    println("saving")
+    db.saveGrid(grid)
+    println("saved")
+  }
+
+  def getGridById(id: Int): (Int, String)  = db.getGridById(id)
+
+  def getAllGrids: List[(Int, String)] = db.getAllGrids
+
+  def deleteGridById(id: Int): Boolean = db.deleteGridById(id)
 
 }
